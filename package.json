@@ -17,11 +17,25 @@
       "title": "Authenticate",
       "description": "Sign in or Register to start posting your updates",
       "mode": "view"
+    },
+    {
+      "name": "join",
+      "title": "Join Workspace",
+      "description": "Join a workspace using the access code.",
+      "mode": "view"
+    },
+    {
+      "name": "list",
+      "title": "List Workspaces",
+      "description": "List all workspaces that you are a member of.",
+      "mode": "view"
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.87.5",
-    "@raycast/utils": "^1.17.0"
+    "@raycast/utils": "^1.17.0",
+    "getstream": "^8.4.1",
+    "got": "^14.4.5"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",

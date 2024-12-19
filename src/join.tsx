@@ -3,8 +3,7 @@ import got from "got";
 import { useState } from "react";
 
 type Values = {
-  email: string;
-  password: string;
+  access_code: string;
 };
 
 export default function Command() {
@@ -13,30 +12,37 @@ export default function Command() {
   async function handleSubmit(values: Values) {
     setIsLoading(true);
 
+    const jwtToken = await LocalStorage.getItem("jwt_token");
+
+    if (! jwtToken) {
+        showToast({ 
+            title: "Storage Error", 
+            message: "Failed to load JWT token from storage",
+            style: Toast.Style.Failure 
+        });
+        setIsLoading(false);
+    }
+
     try {
-      const response = await got.post("https://api-starter.test/auth/login", {
+      await got.post("https://api-starter.test/workspaces/join", {
         json: values,
         responseType: 'json',
-        // For self-signed certificates in development
+        headers: {
+            Authorization: `Bearer ${jwtToken}`
+        },
         https: {
           rejectUnauthorized: false
         }
       });
 
-      const token = response.body.access_token;
-      const streamToken = response.body.stream_token;
-
-      await LocalStorage.setItem("jwt_token", token);
-      await LocalStorage.setItem("stream_token", streamToken);
-
       showToast({ 
-        title: "Login Successful", 
-        message: "JWT token stored",
+        title: "Joined Workspace", 
+        message: "Workspace joined successfully",
         style: Toast.Style.Success 
       });
     } catch (error) {
       showToast({ 
-        title: "Failed to login", 
+        title: "Failed to join Workspace", 
         message: error instanceof Error ? error.message : "Unknown error", 
         style: Toast.Style.Failure 
       });
@@ -54,9 +60,8 @@ export default function Command() {
       }
       isLoading={isLoading}
     >
-      <Form.Description text="Sign into your account to get started." />
-      <Form.TextField id="email" title="Email Address" placeholder="jon.snow@thewall.io" />
-      <Form.PasswordField id="password" title="Password" placeholder="super-secret-password" />
+      <Form.Description text="Join a workspace using an Access Code." />
+      <Form.TextField id="access_code" title="Access Code" placeholder="super-secret-access-code" />
     </Form>
   );
 }
